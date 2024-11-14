@@ -9,6 +9,8 @@ data_file = 'config/data.csv'
 df = load_and_preprocess_data(data_file)
 df = add_scores(df)
 
+
+
 # Titre de l'application
 st.title("Visualisation des Scores ASTRE et IPS des Étudiants")
 
@@ -77,8 +79,3 @@ fig = px.bar(x=labels, y=values,
              labels={'x': 'Égalité', 'y': 'Nombre d\'Étudiants'})
 st.plotly_chart(fig)
 
-# Graphique d'évolution des scores pour chaque étudiant
-fig = px.line(df, x='Numero etudiant', y=['Score_ASTRE', 'Score_IPS'],
-              title="Évolution des Scores pour ASTRE et IPS par Étudiant",
-              labels={'variable': 'Option', 'value': 'Score'})
-st.plotly_chart(fig)

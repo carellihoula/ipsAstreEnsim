@@ -14,7 +14,6 @@ def calculate_scores(row):
     # Langages bas niveau pour ASTRE
     if any(l in langages for l in ['C', 'C++', 'Assembleur']):
         score_astre += weights['langages_bas_niveau']['ASTRE']
-        score_ips += weights['langages_bas_niveau']['IPS']
 
     # Langages de script et développement système pour ASTRE
     if any(l in langages for l in ['Python', 'Shell / Bash']):
@@ -23,18 +22,15 @@ def calculate_scores(row):
     # Langages web pour IPS (HTML / CSS / Javascript)
     if 'HTML / CSS / Javascript' in langages:
         score_ips += weights['langages_web']['IPS']
-        score_astre += weights['langages_web']['ASTRE'] #poids faible
 
     # Langages de développement d'applications pour IPS
     if any(l in langages for l in ['C#', 'Kotlin / Dart / Swift']):
         score_ips += weights['langages_applications']['IPS']
-        score_astre += weights['langages_applications']['ASTRE']
 
 
     # Langages de gestion de données pour IPS (SQL et PHP)
     if any(l in langages for l in ['SQL', 'PHP']):
         score_ips += weights['langages_data_management']['IPS']
-        score_astre += weights['langages_data_management']['ASTRE']
 
     # Langage généraliste pour les deux (Java)
     if 'Java' in langages:
@@ -45,12 +41,10 @@ def calculate_scores(row):
     # Associations techniques pour ASTRE
     if  'IEEE Xtreme' in associations or 'Fablab' in associations:
         score_astre += weights['interet_technique']['ASTRE']
-        score_ips += weights['interet_technique']['IPS']
 
     # Associations de créativité et modélisation pour IPS
     if '24h du code' in associations or 'ENSIMersion' in associations or 'Nuit de l’info' in associations:
         score_ips += weights['interet_creativite']['IPS']
-        score_astre += weights['interet_creativite']['ASTRE']
 
     # Associations sociales pour IPS
     if any(event in associations for event in
@@ -64,33 +58,29 @@ def calculate_scores(row):
     # Formations techniques pour ASTRE excepté le bts
     if any(f in formation for f in ['BUT', 'Prépa intégrée', 'CPGE']):
         score_astre += weights['formations_anterieures_technique']['ASTRE']
-        score_ips += weights['formations_anterieures_technique']['IPS']
 
     # Formations généralistes pour IPS
     if any(f in formation for f in ['BTS', 'Licence', 'Prépa BL','Étudiant international']):
         score_ips += weights['formations_anterieures_generaliste']['IPS']
-        score_astre += weights['formations_anterieures_generaliste']['ASTRE']
-
 
     # Hypothèse 5 : Profil de personnalité (Question 11)
     traits = row['11. Es-tu plutôt : (3 choix maximum)']
     # Traits associés à ASTRE
     if any(trait in traits for trait in ['Autonome', 'Pragmatique', 'Solitaire']):
         score_astre += weights['profil_personnalite_technique']['ASTRE']
-        score_ips += weights['profil_personnalite_technique']['IPS']
+    # Traits associés à IPS
+    if any(trait in traits for trait in ['Collaboratif', 'Créatif', 'Artistique']):
+        score_ips += weights['profil_personnalite_creatif']['IPS']
 
     # Hypothèse 1 : Fréquence de codage (Question 19)
     frequence = row['19. À quelle fréquence codes-tu pour des projets personnels ?']
     if frequence in ['Quotidiennement', 'Plusieurs fois par semaine']:
         score_astre += weights['frequence_code']['ASTRE']
-        score_ips += weights['frequence_code']['IPS']
+        #score_ips += weights['frequence_code']['IPS']
     elif frequence == 'De temps en temps':
         score_ips += weights['frequence_code']['IPS']
 
-    # Traits associés à IPS
-    if any(trait in traits for trait in ['Collaboratif', 'Créatif', 'Artistique']):
-        score_ips += weights['profil_personnalite_creatif']['IPS']
-        score_astre += weights['profil_personnalite_creatif']['ASTRE']
+
 
     # Hypothèse 7 : Plan avant ENSIM (Question 3)
     plan_avant_ensim = row['3. Savais-tu déjà ce que tu voulais faire avant de venir à l’ENSIM ?']
@@ -103,10 +93,8 @@ def calculate_scores(row):
     motivation = row['4. Qu’est-ce qui te motive à venir en cours ?']
     if 'Les TP' in motivation or 'Les profs' in motivation:
         score_astre += weights['motivation_technique']['ASTRE']
-        score_ips += weights['motivation_technique']['IPS']
     if 'Les copains' in motivation or 'La Kfet' in motivation:
         score_ips += weights['motivation_sociale']['IPS']
-        score_astre += weights['motivation_sociale']['ASTRE']
 
     # Hypothèse 9 : Auto-entrepreneuriat (Question 9)
     auto_entrepreneur = row['9. Envisages-tu l’auto-entreprenariat ?']
@@ -128,22 +116,17 @@ def calculate_scores(row):
     # Entreprises pour ASTRE
     if 'STMicroelectronics' in entreprises or 'Thales' in entreprises or 'ANSSI' in entreprises or 'Bouygues Télécom' in entreprises or 'Schneider Electric' in entreprises:
         score_astre += weights['entreprises_technique']['ASTRE']
-        score_ips += weights['entreprises_technique']['IPS']
     # Entreprises pour IPS
     if 'Sopra Steria' in entreprises or 'Ubisoft' in entreprises or 'MMA' in entreprises:
         score_ips += weights['entreprises_creative']['IPS']
-        score_astre += weights['entreprises_creative']['ASTRE']
 
     # Hypothèse 11 : Préférence pour le métier futur (Question 15)
     metier = row['15. Petit, quel était ton métier de rêve ?']
     if metier in ['Architecte', 'Informaticien', 'Inventeur', 'Electricien', 'Astronaute']:
         score_astre += weights['preferences_metier_tendance_astre']['ASTRE'] #poids dominant
-        score_ips += weights['preferences_metier_tendance_astre']['IPS'] #poids faible
     # Métiers orientés vers IPS
     elif metier in ['Pompier', 'Policier', 'Chanteur', 'Postier', 'Aventurier']:
         score_ips += weights['preferences_metier_tendance_ips']['IPS'] # poids dominant
-        score_astre += weights['preferences_metier_tendance_ips']['ASTRE'] #poids faible
-
 
     # Hypothèse 12 : Activités personnelles (Question 20)
     activites = row['20. Quelles activités te passionnent le plus? (3 choix maximum)']
@@ -157,10 +140,9 @@ def calculate_scores(row):
     bureau = row['17. Qu’est-ce que tu as sur ton bureau ?']
     if 'Arduino/Raspberry Pi' in bureau or 'Outils de bricolage' in bureau or 'Plusieurs écrans' in bureau:
         score_astre += weights['materiel_bureau_technique']['ASTRE']
-        score_ips += weights['materiel_bureau_technique']['IPS']
+
     if 'Crayons' in bureau or 'Pinceaux' in bureau or 'Aquarium' in bureau or 'Enceinte connectée' in bureau or 'Calendrier gribouillé' in bureau:
         score_ips += weights['materiel_bureau_classique']['IPS']
-        score_astre += weights['materiel_bureau_classique']['ASTRE']
 
     # Hypothèse 14 : Palette de couleurs préférées (Question 16)
     palette = row['16. Quelle palette de couleurs préfères-tu ?']
@@ -171,7 +153,6 @@ def calculate_scores(row):
 
     travail_sans_code = row['21. Envisagez vous un travail sans code/programmation plus tard ?']
     if travail_sans_code == 1: # oui
-        score_astre += weights['travail_sans_code']['ASTRE']
         score_ips += weights['travail_sans_code']['IPS'] #poids dominant
     if travail_sans_code == 0: # non
         #On incremente le score_astre avec une valeur dominante
